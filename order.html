@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-commerce Store - Order Processing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+    .content {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: 50px auto;
+    }
+    .header {
+      background-color: #232f3e;
+      color: white;
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .order-item img {
+      max-width: 100px;
+      height: auto;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <div class="header">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="text-xl font-bold">E-commerce Store</div>
+      <div class="flex-1 mx-4">
+        <input type="text" placeholder="Search products..." class="w-full p-2 rounded-lg">
+      </div>
+      <div class="space-x-4">
+        <a href="login.html" class="hover:underline">Login</a>
+        <a href="register.html" class="hover:underline">Register</a>
+        <span id="welcomeUser" class="hidden"></span>
+        <a href="cart.html" class="hover:underline">Cart</a>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Order Processing</h1>
+    <div id="orderDetails" class="space-y-4"></div>
+    <div class="mt-4">
+      <label class="block text-gray-700">Address: <input type="text" id="address" class="w-full p-2 border rounded"></label>
+    </div>
+    <div class="mt-4 text-center">
+      <button onclick="processOrder()" class="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500">Place Order</button>
+      <a href="cart.html" class="ml-4 text-gray-600 hover:underline">Back to Cart</a>
+    </div>
+  </div>
+
+  <script>
+    let products = [
+      { id: 1, name: 'Laptop', price: 10.00, image: 'https://images.unsplash.com/photo-1588872657579-694cd5c325b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
+      { id: 2, name: 'Smartphone', price: 15.00, image: 'https://images.unsplash.com/photo-1591336018263-4e9c83b2e4e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
+      { id: 3, name: 'T-Shirt', price: 20.00, image: 'https://images.unsplash.com/photo-1608231388348-3d61e7e1d938?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
+      { id: 4, name: 'Shoes', price: 25.00, image: 'https://images.unsplash.com/photo-1600585154016-2a3fd1a29e07?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' }
+    ];
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if (!currentUser) {
+      window.location.href = 'login.html';
+    } else {
+      if (currentUser) {
+        document.querySelectorAll('a[href="login.html"], a[href="register.html"]').forEach(a => a.style.display = 'none');
+        document.getElementById('welcomeUser').classList.remove('hidden');
+        document.getElementById('welcomeUser').textContent = `Welcome, ${currentUser.username}`;
+      }
+
+      if (cart.length > 0) {
+        const orderDiv = document.getElementById('orderDetails');
+        let total = 0;
+        cart.forEach(item => {
+          const product = products.find(p => p.id === item.id);
+          orderDiv.innerHTML += `
+            <div class="flex items-center p-4 bg-white rounded shadow">
+              <img src="${product.image}" alt="${product.name}" class="order-item mr-4">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-700">${product.name}</h3>
+                <p class="text-gray-600">Price: $${item.price}</p>
+              </div>
+            </div>
+          `;
+          total += item.price;
+        });
+        orderDiv.innerHTML += `<p class="text-lg text-gray-700 font-semibold mt-4">Total: $${total.toFixed(2)}</p>`;
+      } else {
+        document.getElementById('orderDetails').innerHTML = '<p class="text-gray-600">No items in cart.</p>';
+        document.querySelector('button').style.display = 'none';
+      }
+    }
+
+    function processOrder() {
+      const address = document.getElementById('address').value;
+      if (address) {
+        alert(`Order placed successfully! Shipping to: ${address}`);
+        localStorage.removeItem('cart');
+        window.location.href = 'index.html'; // Redirect to home after order
+      } else {
+        alert('Please enter an address!');
+      }
+    }
+  </script>
+</body>
+</html>
